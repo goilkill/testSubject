@@ -138,15 +138,12 @@ class DishServiceTest {
     }
 
     @Test
-    @DisplayName("Negative case: отрицательное количество ингредиента -> отрицательные калории (текущее поведение)")
-    void calculateNutrition_negativeQuantity_returnsNegativeCalories() {
+    @DisplayName("Negative case: отрицательное количество ингредиента -> IllegalStateException")
+    void calculateNutrition_negativeQuantity_throws() {
         List<DishDTO.IngredientRequest> ingredients = List.of(ingredient(1L, -50.0));
         when(productRepositoryMock.findById(1L))
                 .thenReturn(Optional.of(productWithNutrition(200.0, 0, 0, 0)));
 
-        var calc = dishServiceMock.calculateNutrition(ingredients);
-
-        assertNotNull(calc.getCalories());
-        assertEquals(-100.0, calc.getCalories(), 0.0001);
+        assertThrows(IllegalStateException.class, () -> dishServiceMock.calculateNutrition(ingredients));
     }
 }

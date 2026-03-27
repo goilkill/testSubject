@@ -72,12 +72,20 @@ public class DishService {
 
     public DishDTO.NutritionCalculation calculateNutrition(List<DishDTO.IngredientRequest> ingredientRequests) {
         List<Product> products = resolveProducts(ingredientRequests);
+        double calories = calculateNutrientSum(products, ingredientRequests, "calories");
+        double proteins = calculateNutrientSum(products, ingredientRequests, "proteins");
+        double fats = calculateNutrientSum(products, ingredientRequests, "fats");
+        double carbs = calculateNutrientSum(products, ingredientRequests, "carbohydrates");
+
+        if (calories < 0 || proteins < 0 || fats < 0 || carbs < 0) {
+            throw new IllegalStateException("Расчет КБЖУ невозможен: итоговые значения не могут быть отрицательными.");
+        }
 
         DishDTO.NutritionCalculation calc = new DishDTO.NutritionCalculation();
-        calc.setCalories(calculateNutrientSum(products, ingredientRequests, "calories"));
-        calc.setProteins(calculateNutrientSum(products, ingredientRequests, "proteins"));
-        calc.setFats(calculateNutrientSum(products, ingredientRequests, "fats"));
-        calc.setCarbohydrates(calculateNutrientSum(products, ingredientRequests, "carbohydrates"));
+        calc.setCalories(calories);
+        calc.setProteins(proteins);
+        calc.setFats(fats);
+        calc.setCarbohydrates(carbs);
         calc.setAvailableFlags(calculateAvailableFlags(products));
         return calc;
     }
