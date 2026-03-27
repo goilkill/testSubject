@@ -49,6 +49,7 @@ public class DishService {
 
     @Transactional
     public Dish create(DishDTO.Request dto) {
+        validateNutrition(dto);
         Dish dish = new Dish();
         applyRequest(dish, dto);
         return dishRepository.save(dish);
@@ -56,6 +57,7 @@ public class DishService {
 
     @Transactional
     public Dish update(Long id, DishDTO.Request dto) {
+        validateNutrition(dto);
         Dish dish = findById(id);
         dish.getIngredients().clear();
         applyRequest(dish, dto);
@@ -131,6 +133,25 @@ public class DishService {
                 .filter(availableFlags::contains)
                 .collect(Collectors.toSet());
         dish.setFlags(validFlags);
+    }
+
+    private void validateNutrition(DishDTO.Request dto) {
+        if (dto == null) return;
+        Double p = dto.getProteins();
+        Double f = dto.getFats();
+        Double c = dto.getCarbohydrates();
+        if (p == null || f == null || c == null) return;
+        if (p < 0 || f < 0 || c < 0) {
+            throw new IllegalStateException("Белки, жиры и углеводы блюда должны быть >= 0 г.");
+        }
+        if (p > 100 || f > 100 || c > 100) {
+            throw new IllegalStateException("Каждый компонент БЖУ блюда должен быть <= 100 г.");
+        }
+        double sum = p + f + c;
+        if (sum > 100) {
+            throw new IllegalStateException("Сумма белков, жиров и углеводов блюда должна быть <= 100 г. Текущая сумма: "
+                    + String.format("%.1f", sum) + " г.");
+        }
     }
 
     private double calculateNutrientSum(List<Product> products,
