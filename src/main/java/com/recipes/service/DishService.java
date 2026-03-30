@@ -43,8 +43,6 @@ public class DishService {
         boolean hasCategory = category != null;
         boolean hasFlags = flagsCount > 0;
 
-        // Имя фильтруем на уровне Java (toLowerCase + contains),
-        // потому что LIKE/ILIKE с кириллицей может зависеть от колляции/реализации оператора.
         List<Dish> base;
         if (!hasCategory && !hasFlags) {
             base = dishRepository.findAll();
