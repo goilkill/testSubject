@@ -14,6 +14,10 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByNameContainingIgnoreCase(String name);
 
+    // Для PostgreSQL: ILIKE надёжнее для кириллицы, чем LOWER(... ) LIKE LOWER(...).
+    @Query("SELECT p FROM Product p WHERE p.name ILIKE CONCAT('%', :name, '%')")
+    List<Product> findByNameContainingIlike(@Param("name") String name);
+
     List<Product> findByCategory(Product.ProductCategory category);
 
     List<Product> findByCookingStatus(Product.CookingStatus cookingStatus);
@@ -22,7 +26,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByFlag(@Param("flag") DietFlag flag);
 
     @Query("SELECT DISTINCT p FROM Product p " +
-            "WHERE (:name IS NULL OR LOWER(p.name) LIKE LOWER(CONCAT('%', CAST(:name AS string), '%'))) " +
+            "WHERE (:name IS NULL OR LOWER(p.name) LIKE CONCAT(CONCAT('%', LOWER(:name)), '%')) " +
             "AND (:category IS NULL OR p.category = :category) " +
             "AND (:cookingStatus IS NULL OR p.cookingStatus = :cookingStatus) " +
             "AND (:flagsCount = 0 OR (SELECT COUNT(DISTINCT f2) FROM p.flags f2 WHERE f2 IN :flags) = :flagsCount)")

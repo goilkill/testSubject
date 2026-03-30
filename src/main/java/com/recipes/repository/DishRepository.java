@@ -14,13 +14,16 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
 
     List<Dish> findByNameContainingIgnoreCase(String name);
 
+    @Query("SELECT d FROM Dish d WHERE d.name ILIKE CONCAT('%', :name, '%')")
+    List<Dish> findByNameContainingIlike(@Param("name") String name);
+
     List<Dish> findByCategory(Dish.DishCategory category);
 
     @Query("SELECT DISTINCT d FROM Dish d JOIN d.flags f WHERE f = :flag")
     List<Dish> findByFlag(@Param("flag") DietFlag flag);
 
     @Query("SELECT DISTINCT d FROM Dish d " +
-            "WHERE (:name IS NULL OR LOWER(d.name) LIKE LOWER(CONCAT('%', CAST(:name AS string), '%'))) " +
+            "WHERE (:name IS NULL OR LOWER(d.name) LIKE CONCAT(CONCAT('%', LOWER(:name)), '%')) " +
             "AND (:category IS NULL OR d.category = :category) " +
             "AND (:flagsCount = 0 OR (SELECT COUNT(DISTINCT f2) FROM d.flags f2 WHERE f2 IN :flags) = :flagsCount)")
     List<Dish> findWithFilters(

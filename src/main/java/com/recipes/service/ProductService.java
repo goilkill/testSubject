@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,26 @@ public class ProductService {
         List<DietFlag> safeFlags = flags != null ? flags : List.of();
         long flagsCount = safeFlags.size();
         if (safeFlags.isEmpty()) safeFlags = List.of(DietFlag.VEGAN);
-        return productRepository.findWithFilters(name, category, cookingStatus, safeFlags, flagsCount);
+
+        boolean hasCategory = category != null;
+        boolean hasCookingStatus = cookingStatus != null;
+        boolean hasFlags = flagsCount > 0;
+
+        List<Product> base;
+        if (!hasCategory && !hasCookingStatus && !hasFlags) {
+            base = productRepository.findAll();
+        } else {
+            base = productRepository.findWithFilters(null, category, cookingStatus, safeFlags, flagsCount);
+        }
+
+        if (name == null || name.isBlank()) {
+            return base;
+        }
+
+        String query = name.toLowerCase(Locale.ROOT);
+        return base.stream()
+                .filter(p -> p.getName() != null && p.getName().toLowerCase(Locale.ROOT).contains(query))
+                .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
     }
 
     @Transactional(readOnly = true)

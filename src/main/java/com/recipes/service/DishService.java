@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,7 +39,27 @@ public class DishService {
         List<DietFlag> safeFlags = flags != null ? flags : List.of();
         long flagsCount = safeFlags.size();
         if (safeFlags.isEmpty()) safeFlags = List.of(DietFlag.VEGAN);
-        return dishRepository.findWithFilters(name, category, safeFlags, flagsCount);
+
+        boolean hasCategory = category != null;
+        boolean hasFlags = flagsCount > 0;
+
+        // Имя фильтруем на уровне Java (toLowerCase + contains),
+        // потому что LIKE/ILIKE с кириллицей может зависеть от колляции/реализации оператора.
+        List<Dish> base;
+        if (!hasCategory && !hasFlags) {
+            base = dishRepository.findAll();
+        } else {
+            base = dishRepository.findWithFilters(null, category, safeFlags, flagsCount);
+        }
+
+        if (name == null || name.isBlank()) {
+            return base;
+        }
+
+        String query = name.toLowerCase(Locale.ROOT);
+        return base.stream()
+                .filter(d -> d.getName() != null && d.getName().toLowerCase(Locale.ROOT).contains(query))
+                .toList();
     }
 
     @Transactional(readOnly = true)
