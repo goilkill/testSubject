@@ -3,6 +3,7 @@ package com.recipes.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.recipes.dto.DishDTO;
 import com.recipes.model.Dish;
+import com.recipes.model.DishIngredient;
 import com.recipes.model.Product;
 import com.recipes.repository.DishRepository;
 import com.recipes.repository.ProductRepository;
@@ -139,6 +140,14 @@ class DishApiIntegrationTest {
         dish.setPortionSize(250.0);
         dish.setCategory(Dish.DishCategory.SOUP);
         dish.setPhotos(new ArrayList<>());
+
+        Product product = productRepository.findById(productId).orElseThrow();
+        DishIngredient ingredient = new DishIngredient();
+        ingredient.setDish(dish);
+        ingredient.setProduct(product);
+        ingredient.setQuantity(100.0);
+        dish.getIngredients().add(ingredient);
+
         dishRepository.save(dish);
         dishRepository.flush();
 

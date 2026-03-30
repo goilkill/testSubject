@@ -56,6 +56,8 @@ public class Dish {
     @Column(nullable = false)
     private Double carbohydrates;
 
+    @NotNull
+    @Size(min = 1)
     @OneToMany(mappedBy = "dish", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<DishIngredient> ingredients = new ArrayList<>();
 

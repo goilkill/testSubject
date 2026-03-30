@@ -14,7 +14,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     List<Product> findByNameContainingIgnoreCase(String name);
 
-    // Для PostgreSQL: ILIKE надёжнее для кириллицы, чем LOWER(... ) LIKE LOWER(...).
     @Query("SELECT p FROM Product p WHERE p.name ILIKE CONCAT('%', :name, '%')")
     List<Product> findByNameContainingIlike(@Param("name") String name);
 
