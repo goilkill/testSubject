@@ -71,7 +71,7 @@ class DishApiIntegrationTest {
     }
 
     @Test
-    @DisplayName("ЭП: пустой список ингредиентов -> 200, калории 0")
+    @DisplayName("ЭР: пустой список ингредиентов -> 200, калории 0")
     void calculate_emptyIngredients_returnsZeroCalories() throws Exception {
         mockMvc.perform(post("/api/dishes/calculate")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -94,7 +94,7 @@ class DishApiIntegrationTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("calculateCaloriesCases")
-    @DisplayName("ЭП + границы: POST /calculate с реальным продуктом из БД")
+    @DisplayName("ЭР + границы: POST /calculate с реальным продуктом из БД")
     void calculate_withSavedProduct_returnsExpectedCalories(String caseName, double quantity, double expectedCalories)
             throws Exception {
         List<DishDTO.IngredientRequest> body = List.of(ingredient(productId, quantity));
@@ -128,7 +128,7 @@ class DishApiIntegrationTest {
     }
 
     @Test
-    @DisplayName("ЭП: поиск блюд по name без учёта регистра")
+    @DisplayName("ЭР: поиск блюд по name без учёта регистра")
     void listDishes_nameFilter_isCaseInsensitive() throws Exception {
         Dish dish = new Dish();
         dish.setName("Борщ Особый");

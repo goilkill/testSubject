@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 
+import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,10 +49,10 @@ class ProductApiIntegrationTest {
     }
 
     @Test
-    @DisplayName("ЭП + граница регистра: GET /api/products?name искомая часть в другом регистре")
+    @DisplayName("ЭР + граница регистра: GET /api/products?name искомая часть в другом регистре")
     void listProducts_nameSearch_ignoresCase() throws Exception {
         mockMvc.perform(get("/api/products").param("name", "ТВОРОЖОК"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*].name").value(org.hamcrest.Matchers.hasItem("Слоёный творожок")));
+                .andExpect(jsonPath("$[*].name").value(hasItem("Слоёный творожок")));
     }
 }
