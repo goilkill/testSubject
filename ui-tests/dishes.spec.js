@@ -1,8 +1,8 @@
 const { test, expect } = require('@playwright/test');
 
 const runId = `${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
-const productName = `pw${runId} продукт для блюда`;
-const dishName = `pw${runId} Борщ Особый`;
+const productName = `${runId} продукт для блюда`;
+const dishName = `${runId} Борщ Особый`;
 
 let productId;
 let dishId;

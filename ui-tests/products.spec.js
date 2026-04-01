@@ -82,7 +82,7 @@ test.describe('Продукты: валидация названия при со
     await expect(page.locator('#modal')).toBeVisible();
   });
 
-  test('BVA: имя из 1 символа — ошибка', async ({ page }) => {
+  test('имя из 1 символа — ошибка', async ({ page }) => {
     await page.fill('#fName', 'A');
     await page.selectOption('#fCategory', 'VEGETABLES');
     await page.selectOption('#fCooking', 'READY_TO_EAT');
@@ -94,7 +94,7 @@ test.describe('Продукты: валидация названия при со
     await expect(page.locator('#formError')).toBeVisible();
   });
 
-  test('BVA: имя из 2 символов — успешное создание', async ({ page }) => {
+  test('имя из 2 символов — успешное создание', async ({ page }) => {
     const finalName = `Z${String(runId).slice(-1)}`;
     expect(finalName.length).toBe(2);
 
