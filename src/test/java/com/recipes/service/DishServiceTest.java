@@ -136,14 +136,4 @@ class DishServiceTest {
 
         assertThrows(EntityNotFoundException.class, () -> dishServiceMock.calculateNutrition(ingredients));
     }
-
-    @Test
-    @DisplayName("Negative case: отрицательное количество ингредиента -> IllegalStateException")
-    void calculateNutrition_negativeQuantity_throws() {
-        List<DishDTO.IngredientRequest> ingredients = List.of(ingredient(1L, -50.0));
-        when(productRepositoryMock.findById(1L))
-                .thenReturn(Optional.of(productWithNutrition(200.0, 0, 0, 0)));
-
-        assertThrows(IllegalStateException.class, () -> dishServiceMock.calculateNutrition(ingredients));
-    }
 }

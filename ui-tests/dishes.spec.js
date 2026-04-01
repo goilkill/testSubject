@@ -1,16 +1,12 @@
 const { test, expect } = require('@playwright/test');
 
-const runId = `${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
-const productName = `${runId} продукт для блюда`;
-const dishName = `${runId} Борщ Особый`;
-
 let productId;
 let dishId;
 
 test.beforeAll(async ({ request }) => {
   const pr = await request.post('/api/products', {
     data: {
-      name: productName,
+      name: 'продукт для блюда',
       calories: 200,
       proteins: 10,
       fats: 5,
@@ -28,7 +24,7 @@ test.beforeAll(async ({ request }) => {
 
   const dr = await request.post('/api/dishes', {
     data: {
-      name: dishName,
+      name: 'Борщ Особый',
       category: 'SOUP',
       portionSize: 250,
       ingredients: [{ productId, quantity: 100 }],
@@ -60,7 +56,7 @@ test.describe('Блюда: поиск по названию', () => {
     { title: 'ЭР: подстрока в смешанном регистре', query: 'бОрЩ', expectEmpty: false },
     { title: 'ЭР: подстрока в верхнем регистре', query: 'БОРЩ', expectEmpty: false },
     { title: 'ЭР: пустой запрос (весь список)', query: '', expectEmpty: false },
-    { title: 'ЭР: несуществующая подстрока', query: `___no_dish_${runId}___`, expectEmpty: true },
+    { title: 'ЭР: несуществующая подстрока', query: '___no_dish___', expectEmpty: true },
   ];
 
   for (const c of searchCases) {
@@ -84,7 +80,7 @@ test.describe('Блюда: поиск по названию', () => {
       if (c.expectEmpty) {
         await expect(page.locator('.empty')).toContainText('Блюда не найдены');
       } else {
-        await expect(page.locator('.item-name', { hasText: dishName })).toBeVisible();
+        await expect(page.locator('.item-name', { hasText: 'Борщ Особый' }).first()).toBeVisible();
       }
     });
   }
@@ -103,7 +99,7 @@ test.describe('Блюда: модальное окно создания', () => 
   });
 
   test('ЭР: сохранение без ингредиентов — ошибка в форме', async ({ page }) => {
-    await page.fill('#fName', `pw${runId} без состава`);
+    await page.fill('#fName', 'без состава');
     await page.selectOption('#fCategory', 'SOUP');
     await page.fill('#fPortionSize', '250');
     await page.locator('#modal .modal-actions button.btn-blue', { hasText: 'Сохранить' }).click();

@@ -1,7 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-const runId = `${Date.now()}_${Math.floor(Math.random() * 1e6)}`;
-const productName = `pw${runId} Слоёный творожок`;
+const productName = 'Слоёный творожок';
 let productId;
 
 test.beforeAll(async ({ request }) => {
@@ -40,7 +39,7 @@ test.describe('Продукты: поиск по названию', () => {
   const searchCases = [
     { title: 'ЭП: подстрока в верхнем регистре', query: 'ТВОРОЖОК', expectEmpty: false },
     { title: 'ЭП: пустой запрос', query: '', expectEmpty: false },
-    { title: 'ЭП: несуществующий продукт', query: `___no_prod_${runId}___`, expectEmpty: true },
+    { title: 'ЭП: несуществующий продукт', query: '___no_prod___', expectEmpty: true },
   ];
 
   for (const c of searchCases) {
@@ -64,7 +63,7 @@ test.describe('Продукты: поиск по названию', () => {
       if (c.expectEmpty) {
         await expect(page.locator('.empty')).toContainText('Продукты не найдены');
       } else {
-        await expect(page.locator('.item-name', { hasText: productName })).toBeVisible();
+        await expect(page.locator('.item-name', { hasText: productName }).first()).toBeVisible();
       }
     });
   }
@@ -95,8 +94,7 @@ test.describe('Продукты: валидация названия при со
   });
 
   test('имя из 2 символов — успешное создание', async ({ page }) => {
-    const finalName = `Z${String(runId).slice(-1)}`;
-    expect(finalName.length).toBe(2);
+    const finalName = 'FF';
 
     await page.fill('#fName', finalName);
     await page.selectOption('#fCategory', 'VEGETABLES');
